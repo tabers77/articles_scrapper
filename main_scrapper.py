@@ -6,7 +6,7 @@ from IPython.display import HTML
 from helpers import *
 
 
-def main_scraper(url_path: str, queries: list, n_pages = 1, open_browser=False):
+def main_scraper(url_path: str, queries: list, n_pages=1, open_browser=False):
 
     chrome_browser = get_activate_browser(url_path=url_path, open_browser=open_browser)
     # ****** s2 do search ******
@@ -16,28 +16,23 @@ def main_scraper(url_path: str, queries: list, n_pages = 1, open_browser=False):
     dates = []
     links = []
     query_list = []
-
+    #status = 0
     for query in queries:
 
         print(f'Current query being processed: {query}')
 
         make_search_click(browser=chrome_browser, query=query, search_bar_xpath='//*[@id="search-4"]/div/form/input[1]',
                           btn_xpath='//*[@id="search-4"]/div/form/button')
-
         url_base = chrome_browser.current_url
 
         for i in range(0, n_pages):
             i = i + 1
             page_add = f'&paged={i}'
             current_url = url_base + page_add
-            print(current_url)
             res = requests.get(current_url)
 
-            # if res.status_code == 403:
-            #     print('Re try to get url..')
-            #     time.sleep(5)
-            #     res = requests.get(current_url)
-            #     print(res.status_code)
+            #if res.status_code == 403:
+             #   status += 1
 
             soup = BeautifulSoup(res.text, 'html.parser')
             for row in soup.findAll('article'):
@@ -57,6 +52,9 @@ def main_scraper(url_path: str, queries: list, n_pages = 1, open_browser=False):
     return df
 
 
-urls = ['https://machinelearningmastery.com/start-here', ]
-df_samp = main_scraper(url_path='https://machinelearningmastery.com/start-here', queries=['logistic regression'], open_browser=False)
+urls = ['https://machinelearningmastery.com/start-here']
+queries = ['logistic regression', 'keras']
+
+df_samp = main_scraper(url_path='https://machinelearningmastery.com/start-here', queries=queries,
+                       open_browser=False)
 print(df_samp)

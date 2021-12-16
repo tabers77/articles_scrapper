@@ -19,7 +19,18 @@ def accept_cookies(browser, cookie_btn_xpath):
     print('Cookies accepted')
 
 
-def get_activate_browser(url_path: str, open_browser=False, cookie_btn_xpath=None):
+def edit_url(url_path, url_type='default', query=None, site=None):
+
+    if url_type != 'default':
+        query = f'site:{site}'+' '+ query
+        query = str('+'.join(query.split()))
+        url_path = 'https://google.com/search?q=' + query
+        return url_path
+    else:
+        return url_path
+
+
+def get_browser(url_path: str, open_browser=False, cookie_btn_xpath=None):
     """
 
     :param url_path:
@@ -32,22 +43,20 @@ def get_activate_browser(url_path: str, open_browser=False, cookie_btn_xpath=Non
     chr_options.add_experimental_option("detach", True)
 
     if not open_browser:
+        # Put following as part of config
         chr_options.add_argument('--headless')
+        chr_options.add_argument('--no-sandbox')
+        #chr_options.add_argument('--disable-dev-shm-usage')
 
     chrome_browser = webdriver.Chrome(service=service, options=chr_options)
     chrome_browser.maximize_window()
+
     chrome_browser.get(url_path)
 
     if cookie_btn_xpath is not None:
         accept_cookies(browser=chrome_browser, cookie_btn_xpath=cookie_btn_xpath)
 
     return chrome_browser
-
-
-def build_query():
-    """work in proress"""
-    #s = f'allintitle:{}'
-    pass
 
 
 def make_search_click(browser, query: str, search_bar_xpath: str, btn_xpath=None, use_keys=False):
